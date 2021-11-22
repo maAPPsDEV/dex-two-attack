@@ -1,6 +1,6 @@
-# Solidity Game - [Game Title] Attack
+# Solidity Game - DexTwo Attack
 
-_Inspired by OpenZeppelin's [Ethernaut](https://ethernaut.openzeppelin.com), [Game Title] Level_
+_Inspired by OpenZeppelin's [Ethernaut](https://ethernaut.openzeppelin.com), DexTwo Level_
 
 ⚠️Do not try on mainnet!
 
@@ -41,39 +41,72 @@ So, don't you need to use [`SafeMath`](https://github.com/OpenZeppelin/openzeppe
 
 ```solidity
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.0;
 
-contract Token {
-  mapping(address => uint256) balances;
-  uint256 public totalSupply;
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-  constructor(uint256 _initialSupply) public {
-    balances[msg.sender] = totalSupply = _initialSupply;
+contract DexTwo {
+  address public token1;
+  address public token2;
+
+  constructor(address _token1, address _token2) {
+    token1 = _token1;
+    token2 = _token2;
   }
 
-  function transfer(address _to, uint256 _value) public returns (bool) {
-    require(balances[msg.sender] - _value >= 0);
-    balances[msg.sender] -= _value;
-    balances[_to] += _value;
-    return true;
+  function swap(
+    address from,
+    address to,
+    uint256 amount
+  ) public {
+    require(IERC20(from).balanceOf(msg.sender) >= amount, "Not enough to swap");
+    uint256 swap_amount = getSwapAmount(from, to, amount);
+    IERC20(from).transferFrom(msg.sender, address(this), amount);
+    IERC20(to).approve(address(this), swap_amount);
+    IERC20(to).transferFrom(address(this), msg.sender, swap_amount);
   }
 
-  function balanceOf(address _owner) public view returns (uint256 balance) {
-    return balances[_owner];
+  function addLiquidity(address token_address, uint256 amount) public {
+    IERC20(token_address).transferFrom(msg.sender, address(this), amount);
+  }
+
+  function getSwapAmount(
+    address from,
+    address to,
+    uint256 amount
+  ) public view returns (uint256) {
+    return ((amount * IERC20(to).balanceOf(address(this))) /
+      IERC20(from).balanceOf(address(this)));
+  }
+
+  function approve(address spender, uint256 amount) public {
+    SwappableTokenTwo(token1).approve(spender, amount);
+    SwappableTokenTwo(token2).approve(spender, amount);
+  }
+
+  function balanceOf(address token, address account)
+    public
+    view
+    returns (uint256)
+  {
+    return IERC20(token).balanceOf(account);
+  }
+}
+
+contract SwappableTokenTwo is ERC20 {
+  constructor(
+    string memory name,
+    string memory symbol,
+    uint256 initialSupply
+  ) ERC20(name, symbol) {
+    _mint(msg.sender, initialSupply);
   }
 }
 
 ```
 
 ## Configuration
-
-### Install Truffle cli
-
-_Skip if you have already installed._
-
-```
-npm install -g truffle
-```
 
 ### Install Dependencies
 
@@ -86,27 +119,21 @@ yarn install
 ### Run Tests
 
 ```
-truffle develop
-test
+yarn test
 ```
 
-You should take ownership of the target contract successfully.
+You should the result as following:
 
 ```
-truffle(develop)> test
-Using network 'develop'.
+  Destroy Dex
+    √ verify game state
+    √ deploy HackerToken (52ms)
+    √ addLiquidity as HackerToken
+    √ should drain TokenA out (43ms)
+    √ should drain TokenB out
+    √ DexTwo has been destroyed
 
 
-Compiling your contracts...
-===========================
-> Everything is up to date, there is nothing to compile.
-
-
-
-  Contract: Hacker
-    √ should steal countless of tokens (377ms)
-
-
-  1 passing (440ms)
+  6 passing (5s)
 
 ```
