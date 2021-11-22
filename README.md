@@ -6,34 +6,31 @@ _Inspired by OpenZeppelin's [Ethernaut](https://ethernaut.openzeppelin.com), Dex
 
 ## Task
 
-Hacker the basic token contract below.
+This game will ask you to break `DexTwo`, a subtlely modified [Dex](https://github.com/maAPPsDEV/dex-attack) contract from the previous game, in a different way.
 
-1. You are given 20 tokens to start with and you will beat the game if you somehow manage to get your hands on any additional tokens. Preferably a very large amount of tokens.
+You need to drain all balances of token1 and token2 from the `DexTwo` contract to succeed in this game.
+
+You will still start with 10 tokens of `token1` and 10 of `token2`. The DEX contract still starts with 100 of each token.
+
 
 _Hint:_
 
-1. What is an odometer?
+1. How has the `swap` method been modified?
+2. Could you use a custom token contract in your attack?
+
 
 ## What will you learn?
 
-1. Solidity Security Consideration
-2. **Underflow** and **Overflow** in use of unsigned integers
+1. AMM - Automated Market Maker
+2. Swap Pricing
 
 ## What is the most difficult challenge?
 
-**You won't get success to attack if the target contract has been complied in Solidity 0.8.0 or uppper** 🤔
+Ow, it isn't such difficult game 🤕, just think about the hint and keep track where the swap price is populated.
 
-> [**Solidity v0.8.0 Breaking Changes**](https://docs.soliditylang.org/en/v0.8.5/080-breaking-changes.html?highlight=underflow#silent-changes-of-the-semantics)
->
-> Arithmetic operations revert on **underflow** and **overflow**. You can use `unchecked { ... }` to use the previous wrapping behaviour.
->
-> Checks for overflow are very common, so we made them the default to increase readability of code, even if it comes at a slight increase of gas costs.
+If you followed the Solidity games until now successfully, then you should solve it with none of hints.
 
-I had tried to do everything in Solidity 0.8.5 at first time, but it didn't work, as it reverted transactions everytime it met underflow.
-
-Finally, I found that Solidity included those checks by defaults while using sliencely more gas.
-
-So, don't you need to use [`SafeMath`](https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/utils/math/SafeMath.sol)?
+👍
 
 ## Source Code
 
