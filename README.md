@@ -2,6 +2,8 @@
 
 _Inspired by OpenZeppelin's [Ethernaut](https://ethernaut.openzeppelin.com), DexTwo Level_
 
+Please look at [Dex](https://github.com/maAPPsDEV/dex-attack) for the previous Dex game.
+
 ⚠️Do not try on mainnet!
 
 ## Task
